@@ -4,7 +4,10 @@ namespace Vskstudio\Takt\Symfony\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Vskstudio\Takt\Symfony\DependencyInjection\TaktExtension;
+use Vskstudio\Takt\Symfony\TaktFactory;
 use Vskstudio\Takt\SnippetRenderer;
 use Vskstudio\Takt\Takt;
 
@@ -15,6 +18,7 @@ final class TaktExtensionTest extends TestCase
         $container = new ContainerBuilder();
         $container->registerExtension($ext = new TaktExtension());
         $ext->load([$config], $container);
+        $container->register('request_stack', \Symfony\Component\HttpFoundation\RequestStack::class);
         $container->compile();
 
         return $container;
@@ -102,5 +106,24 @@ final class TaktExtensionTest extends TestCase
         $c = $this->compile(['domain' => 'example.com']);
         $def = $c->getDefinition(\Vskstudio\Takt\Symfony\Twig\TaktTwigExtension::class);
         $this->assertTrue($def->hasTag('twig.extension'));
+    }
+
+    public function test_takt_factory_forwards_request_visitor(): void
+    {
+        $request = Request::create('/', 'GET', [], [], [], [
+            'REMOTE_ADDR' => '203.0.113.7',
+            'HTTP_USER_AGENT' => 'Mozilla/5.0',
+        ]);
+        $stack = new RequestStack();
+        $stack->push($request);
+
+        $takt = TaktFactory::create('https://takt.example.com', 'example.com', 'k_test', $stack);
+        $this->assertInstanceOf(\Vskstudio\Takt\Takt::class, $takt);
+    }
+
+    public function test_takt_factory_without_request_still_builds(): void
+    {
+        $takt = TaktFactory::create('https://takt.example.com', 'example.com', null, new RequestStack());
+        $this->assertInstanceOf(\Vskstudio\Takt\Takt::class, $takt);
     }
 }

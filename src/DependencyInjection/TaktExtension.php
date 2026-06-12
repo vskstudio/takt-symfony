@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Vskstudio\Takt\Symfony\TaktFactory;
 use Vskstudio\Takt\Options;
 use Vskstudio\Takt\SnippetRenderer;
 use Vskstudio\Takt\Takt;
@@ -34,10 +35,13 @@ final class TaktExtension extends Extension
         $rendererDef->setPublic(true);
         $container->setDefinition(SnippetRenderer::class, $rendererDef);
 
-        $taktDef = new Definition(Takt::class, [
+        $taktDef = new Definition(Takt::class);
+        $taktDef->setFactory([TaktFactory::class, 'create']);
+        $taktDef->setArguments([
             $config['endpoint'],
             $config['domain'],
             $config['api_key'],
+            new Reference('request_stack'),
         ]);
         $taktDef->setPublic(true);
         $container->setDefinition(Takt::class, $taktDef);
