@@ -2,3 +2,12 @@ parameters:
     level: max
     paths:
         - src
+    reportUnmatchedIgnoredErrors: false
+    ignoreErrors:
+        -
+            # Symfony's fluent config-builder API is not statically analyzable;
+            # its return types vary across Symfony 6.4 and 7.x.
+            messages:
+                - '#on an unknown class Symfony\\Component\\Config\\Definition\\Builder#'
+                - '#undefined method Symfony\\Component\\Config\\Definition\\Builder#'
+            path: src/DependencyInjection/Configuration.php
