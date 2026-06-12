@@ -19,6 +19,7 @@
   },
   "require-dev": {
     "symfony/twig-bundle": "^6.4 || ^7.0",
+    "symfony/flex": "^2",
     "phpunit/phpunit": "^10.5",
     "phpstan/phpstan": "^1.11",
     "friendsofphp/php-cs-fixer": "^3.59"
@@ -26,6 +27,7 @@
   "autoload": { "psr-4": { "Vskstudio\\Takt\\Symfony\\": "src/" } },
   "autoload-dev": { "psr-4": { "Vskstudio\\Takt\\Symfony\\Tests\\": "tests/" } },
   "repositories": [{ "type": "vcs", "url": "https://github.com/vskstudio/takt-core-php" }],
-  "config": { "allow-plugins": { "php-http/discovery": true } },
+  "config": { "allow-plugins": { "php-http/discovery": true, "symfony/flex": true } },
+  "extra": { "symfony": { "require": "7.4.*" } },
   "minimum-stability": "stable"
 }
