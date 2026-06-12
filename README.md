@@ -83,6 +83,12 @@ final class CheckoutController
 The autowired service is bound to the current request: it automatically
 attributes events to the request's IP address and User-Agent.
 
+> **Behind a proxy or load balancer?** The attributed IP comes from
+> `Request::getClientIp()`. It only honours `X-Forwarded-For` when the request
+> is trusted, so configure [`framework.trusted_proxies`](https://symfony.com/doc/current/deployment/proxies.html)
+> for the real client IP. Without trusted proxies, clients can spoof the
+> forwarded header — so never treat the attributed IP as authoritative.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
