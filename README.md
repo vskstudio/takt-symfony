@@ -29,6 +29,7 @@ Create `config/packages/takt.yaml`:
 takt:
   domain: 'example.com'
   endpoint: 'https://takt.example.com'
+  script_origin: null   # first-party origin to dodge ad-blockers (see below)
   api_key: '%env(TAKT_API_KEY)%'
   mode: 'inline'   # inline | cdn | asset
   outbound: false
@@ -38,6 +39,10 @@ takt:
 
 The `api_key` must be **ingest-scoped and domain-bound**. Keep it out of source
 control via an environment variable.
+
+`script_origin` is the first-party origin to serve the tracker + derive the
+endpoint from (`{origin}/api/event`) — your Takt domain or a custom domain to
+dodge ad-blockers (`endpoint` wins over it).
 
 ## Client-side tracking
 

@@ -94,6 +94,18 @@ final class TaktExtensionTest extends TestCase
         $this->assertStringContainsString('data-endpoint="/collect"', $c->get(SnippetRenderer::class)->render());
     }
 
+    public function test_script_origin_flows_into_snippet(): void
+    {
+        $c = $this->compile(['domain' => 'example.com', 'script_origin' => 'https://m.example.com', 'mode' => 'cdn']);
+        $this->assertStringContainsString('data-script-origin="https://m.example.com"', $c->get(SnippetRenderer::class)->render());
+    }
+
+    public function test_script_origin_default_omits_attr(): void
+    {
+        $c = $this->compile(['domain' => 'example.com', 'mode' => 'cdn']);
+        $this->assertStringNotContainsString('data-script-origin', $c->get(SnippetRenderer::class)->render());
+    }
+
     public function test_services_are_public(): void
     {
         $c = $this->compile(['domain' => 'example.com']);

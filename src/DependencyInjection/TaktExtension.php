@@ -24,6 +24,7 @@ final class TaktExtension extends Extension
         $optionsDef->setArguments([[
             'domain' => $config['domain'],
             'endpoint' => $config['endpoint'],
+            'scriptOrigin' => $config['script_origin'],
             'mode' => $config['mode'],
             'outbound' => $config['outbound'],
             'files' => $config['files'],
