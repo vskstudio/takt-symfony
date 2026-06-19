@@ -33,6 +33,12 @@ final class TaktExtension extends Extension
             'fileExtensions' => $config['file_extensions'],
             'excludeLocalhost' => $config['exclude_localhost'],
             'nonce' => $config['nonce'],
+            'sampleRate' => $config['sample_rate'],
+            'trackQuery' => $config['track_query'],
+            'queryParams' => $config['query_params'],
+            'respectDnt' => $config['respect_dnt'],
+            'enabled' => $config['enabled'],
+            'scrubUrl' => $config['scrub_url'],
         ]]);
         $container->setDefinition(Options::class, $optionsDef);
 
