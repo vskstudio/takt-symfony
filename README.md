@@ -34,7 +34,11 @@ takt:
   mode: 'inline'   # inline | cdn | asset
   outbound: false
   files: false
+  file_extensions: []   # e.g. ['pdf', 'zip']; empty keeps the tracker default list
+  tagged: false         # track elements marked with data-takt-event
+  not_found: false      # track 404 pageviews
   exclude_localhost: true
+  nonce: null           # CSP nonce for the inline <script> (request-scoped)
 ```
 
 The `api_key` must be **ingest-scoped and domain-bound**. Keep it out of source
@@ -43,6 +47,10 @@ control via an environment variable.
 `script_origin` is the first-party origin to serve the tracker + derive the
 endpoint from (`{origin}/api/event`) — your Takt domain or a custom domain to
 dodge ad-blockers (`endpoint` wins over it).
+
+Autocapture is opt-in. `outbound`, `files`, `tagged` and `not_found` each add a
+token to the single `data-auto` attribute read by the bundled tracker;
+`file_extensions` narrows which downloads count.
 
 ## Client-side tracking
 
