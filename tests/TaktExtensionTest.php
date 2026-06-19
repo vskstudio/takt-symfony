@@ -94,6 +94,40 @@ final class TaktExtensionTest extends TestCase
         $this->assertStringContainsString('nonce="abc123"', $c->get(SnippetRenderer::class)->render());
     }
 
+    public function test_advanced_options_flow_into_data_attrs(): void
+    {
+        $c = $this->compile([
+            'domain' => 'example.com',
+            'mode' => 'cdn',
+            'sample_rate' => 0.5,
+            'track_query' => true,
+            'query_params' => ['utm_source', 'utm_medium'],
+            'respect_dnt' => false,
+            'enabled' => false,
+        ]);
+        $html = $c->get(SnippetRenderer::class)->render();
+        $this->assertStringContainsString('data-sample-rate="0.5"', $html);
+        $this->assertStringContainsString('data-track-query="true"', $html);
+        $this->assertStringContainsString('data-query-params="utm_source,utm_medium"', $html);
+        $this->assertStringContainsString('data-respect-dnt="false"', $html);
+        $this->assertStringContainsString('data-enabled="false"', $html);
+    }
+
+    public function test_sdk_mode_renders_module_with_scrub_url(): void
+    {
+        $c = $this->compile([
+            'domain' => 'example.com',
+            'mode' => 'sdk',
+            'sample_rate' => 0.25,
+            'scrub_url' => '(u)=>u.split("#")[0]',
+        ]);
+        $html = $c->get(SnippetRenderer::class)->render();
+        $this->assertStringContainsString('<script type="module"', $html);
+        $this->assertStringContainsString('import{init}from', $html);
+        $this->assertStringContainsString('"sampleRate":0.25', $html);
+        $this->assertStringContainsString('scrubUrl:(u)=>u.split("#")[0]', $html);
+    }
+
     public function test_exclude_localhost_false_emits_attr(): void
     {
         $c = $this->compile(['domain' => 'example.com', 'mode' => 'cdn', 'exclude_localhost' => false]);
