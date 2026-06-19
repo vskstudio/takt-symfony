@@ -28,7 +28,11 @@ final class TaktExtension extends Extension
             'mode' => $config['mode'],
             'outbound' => $config['outbound'],
             'files' => $config['files'],
+            'tagged' => $config['tagged'],
+            'notFound' => $config['not_found'],
+            'fileExtensions' => $config['file_extensions'],
             'excludeLocalhost' => $config['exclude_localhost'],
+            'nonce' => $config['nonce'],
         ]]);
         $container->setDefinition(Options::class, $optionsDef);
 

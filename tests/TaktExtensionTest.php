@@ -65,15 +65,33 @@ final class TaktExtensionTest extends TestCase
     public function test_asset_mode_uses_self_hosted_path(): void
     {
         $c = $this->compile(['domain' => 'example.com', 'mode' => 'asset']);
-        $this->assertStringContainsString('src="/takt/takt.js"', $c->get(SnippetRenderer::class)->render());
+        $this->assertStringContainsString('src="/takt/takt.auto.js"', $c->get(SnippetRenderer::class)->render());
     }
 
-    public function test_outbound_and_files_attrs(): void
+    public function test_autocapture_attrs_collapse_into_data_auto(): void
     {
-        $c = $this->compile(['domain' => 'example.com', 'mode' => 'cdn', 'outbound' => true, 'files' => true]);
+        $c = $this->compile([
+            'domain' => 'example.com',
+            'mode' => 'cdn',
+            'outbound' => true,
+            'files' => true,
+            'tagged' => true,
+            'not_found' => true,
+        ]);
         $html = $c->get(SnippetRenderer::class)->render();
-        $this->assertStringContainsString('data-outbound', $html);
-        $this->assertStringContainsString('data-files', $html);
+        $this->assertStringContainsString('data-auto="outbound,downloads,tagged,404"', $html);
+    }
+
+    public function test_file_extensions_emit_downloads_ext(): void
+    {
+        $c = $this->compile(['domain' => 'example.com', 'mode' => 'cdn', 'files' => true, 'file_extensions' => ['pdf', 'zip']]);
+        $this->assertStringContainsString('data-downloads-ext="pdf,zip"', $c->get(SnippetRenderer::class)->render());
+    }
+
+    public function test_nonce_flows_into_snippet(): void
+    {
+        $c = $this->compile(['domain' => 'example.com', 'mode' => 'cdn', 'nonce' => 'abc123']);
+        $this->assertStringContainsString('nonce="abc123"', $c->get(SnippetRenderer::class)->render());
     }
 
     public function test_exclude_localhost_false_emits_attr(): void
