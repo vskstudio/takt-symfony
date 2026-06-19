@@ -80,6 +80,7 @@ Call the `takt()` Twig function inside the `<head>` of your base template:
 - `inline` — the tracking script is embedded directly in the page.
 - `cdn` — a `<script>` tag pointing at the Takt CDN is rendered.
 - `asset` — a `<script>` tag pointing at a self-hosted asset is rendered.
+- `sdk` — a `<script type="module">` boots the full SDK via `init()`; required for `scrub_url`.
 
 ## Server-side events
 
