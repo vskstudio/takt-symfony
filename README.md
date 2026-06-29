@@ -28,7 +28,7 @@ Create `config/packages/takt.yaml`:
 ```yaml
 takt:
   domain: 'example.com'
-  endpoint: 'https://takt.example.com'
+  endpoint: 'https://taktlytics.com'   # defaults to the hosted Takt origin
   script_origin: null   # first-party origin to dodge ad-blockers (see below)
   api_key: '%env(TAKT_API_KEY)%'
   mode: 'inline'   # inline | cdn | asset | sdk (sdk = full ES-module init(), needed for scrub_url)
@@ -52,8 +52,12 @@ The `api_key` must be **ingest-scoped and domain-bound**. Keep it out of source
 control via an environment variable.
 
 `script_origin` is the first-party origin to serve the tracker + derive the
-endpoint from (`{origin}/api/event`) — your Takt domain or a custom domain to
-dodge ad-blockers (`endpoint` wins over it).
+endpoint from (`{origin}/api/event`) — your Takt domain or a custom domain you
+proxy through to dodge ad-blockers (`endpoint` wins over it).
+
+`endpoint` is the server-side ingest base origin. It defaults to the hosted Takt
+origin `https://taktlytics.com`, so a fresh install works out of the box; set it
+explicitly to point at a self-hosted or custom ingest origin.
 
 Autocapture is opt-in. `outbound`, `files`, `tagged` and `not_found` each add a
 token to the single `data-auto` attribute read by the bundled tracker;
