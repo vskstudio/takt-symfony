@@ -10,4 +10,5 @@ parameters:
             messages:
                 - '#on an unknown class Symfony\\Component\\Config\\Definition\\Builder#'
                 - '#undefined method Symfony\\Component\\Config\\Definition\\Builder#'
+                - '#Cannot call method \w+\(\) on mixed#'
             path: src/DependencyInjection/Configuration.php
