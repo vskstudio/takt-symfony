@@ -43,6 +43,7 @@ takt:
   sample_rate: null     # e.g. 0.5 keeps ~50% of hits
   track_query: null     # true keeps the raw query string + hash in URLs
   query_params: []      # params to keep when track_query is off, e.g. ['utm_source']
+  exclude: []           # path prefixes never tracked, requires mode: sdk (e.g. ['/app','/account'])
   respect_dnt: null     # false stops honoring the Do-Not-Track header
   enabled: null         # false disables tracking entirely (kill-switch)
   scrub_url: null       # raw JS fn to rewrite URLs; requires mode: sdk (dev-controlled only)
@@ -64,9 +65,11 @@ token to the single `data-auto` attribute read by the bundled tracker;
 `file_extensions` narrows which downloads count.
 
 The advanced options map to the engine's `sampleRate`, `trackQuery`,
-`queryParams`, `respectDnt` and `enabled`. `scrub_url` is a **raw JS function**
-injected verbatim, so it only works in `mode: sdk` (a full ES-module `init()`
-render) — keep it dev-controlled and never build it from user input.
+`queryParams`, `respectDnt` and `enabled`. `exclude` maps to the engine's
+`exclude` (path prefixes never tracked) and, like `scrub_url`, only works in
+`mode: sdk`. `scrub_url` is a **raw JS function** injected verbatim, so it only
+works in `mode: sdk` (a full ES-module `init()` render) — keep it dev-controlled
+and never build it from user input.
 
 ## Client-side tracking
 

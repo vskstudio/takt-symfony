@@ -128,6 +128,18 @@ final class TaktExtensionTest extends TestCase
         $this->assertStringContainsString('scrubUrl:(u)=>u.split("#")[0]', $html);
     }
 
+    public function test_sdk_mode_renders_exclude(): void
+    {
+        $c = $this->compile([
+            'domain' => 'example.com',
+            'mode' => 'sdk',
+            'exclude' => ['/app', '/account'],
+        ]);
+        $html = $c->get(SnippetRenderer::class)->render();
+        $this->assertStringContainsString('<script type="module"', $html);
+        $this->assertStringContainsString('"exclude":["\/app","\/account"]', $html);
+    }
+
     public function test_exclude_localhost_false_emits_attr(): void
     {
         $c = $this->compile(['domain' => 'example.com', 'mode' => 'cdn', 'exclude_localhost' => false]);

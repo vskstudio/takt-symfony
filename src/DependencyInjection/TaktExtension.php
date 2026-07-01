@@ -36,6 +36,7 @@ final class TaktExtension extends Extension
             'sampleRate' => $config['sample_rate'],
             'trackQuery' => $config['track_query'],
             'queryParams' => $config['query_params'],
+            'exclude' => $config['exclude'],
             'respectDnt' => $config['respect_dnt'],
             'enabled' => $config['enabled'],
             'scrubUrl' => $config['scrub_url'],
