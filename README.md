@@ -2,6 +2,7 @@
 
 
 > 📚 **Documentation** — [taktlytics.com/docs/wrappers/symfony](https://taktlytics.com/docs/wrappers/symfony)
+
 Symfony bundle for [Takt](https://github.com/vskstudio) analytics. It wires the
 Takt snippet into your templates through a `{{ takt() }}` Twig function and
 exposes an autowired `Takt` service for server-side events.
