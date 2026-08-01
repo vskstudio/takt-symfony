@@ -31,7 +31,7 @@ Create `config/packages/takt.yaml`:
 ```yaml
 takt:
   domain: 'example.com'
-  endpoint: 'https://taktlytics.com'   # defaults to the hosted Takt origin
+  endpoint: 'https://taktlytics.com'   # origin or full collect URL (see below)
   script_origin: null   # first-party origin to dodge ad-blockers (see below)
   api_key: '%env(TAKT_API_KEY)%'
   mode: 'inline'   # inline | cdn | asset | sdk (sdk = full ES-module init(), needed for scrub_url)
@@ -59,9 +59,22 @@ control via an environment variable.
 endpoint from (`{origin}/api/event`) — your Takt domain or a custom domain you
 proxy through to dodge ad-blockers (`endpoint` wins over it).
 
-`endpoint` is the server-side ingest base origin. It defaults to the hosted Takt
-origin `https://taktlytics.com`, so a fresh install works out of the box; set it
-explicitly to point at a self-hosted or custom ingest origin.
+`endpoint` is where events are collected. It feeds two code paths at once — the
+browser snippet, which needs the full collect URL, and the server-side sender,
+which needs the origin it appends `/api/event` to — so both forms are accepted
+and normalised for you. These two settings are equivalent:
+
+```yaml
+takt:
+  endpoint: 'https://taktlytics.com'
+  # endpoint: 'https://taktlytics.com/api/event'
+```
+
+A value carrying any other path is taken as the collect URL verbatim, which is
+what a same-origin first-party proxy needs (`endpoint: '/collect'`). Leave it out
+to talk to the hosted Takt service. Takt is a managed service hosted in Europe;
+only the `/takt.js` measurement script can be served from your own domain (see
+`mode: asset` and `script_origin`).
 
 Autocapture is opt-in. `outbound`, `files`, `tagged` and `not_found` each add a
 token to the single `data-auto` attribute read by the bundled tracker;
@@ -88,8 +101,9 @@ Call the `takt()` Twig function inside the `<head>` of your base template:
 ### Modes
 
 - `inline` — the tracking script is embedded directly in the page.
-- `cdn` — a `<script>` tag pointing at the Takt CDN is rendered.
-- `asset` — a `<script>` tag pointing at a self-hosted asset is rendered.
+- `cdn` — a `<script>` tag pointing at jsDelivr (`@vskstudio/takt-core`) is rendered.
+- `asset` — a `<script>` tag pointing at `/takt/takt.auto.js`, served by your own
+  application (prefixed with `script_origin` when set).
 - `sdk` — a `<script type="module">` boots the full SDK via `init()`; required for `scrub_url`.
 
 ## Server-side events
@@ -117,7 +131,19 @@ final class CheckoutController
 ```
 
 The autowired service is bound to the current request: it automatically
-attributes events to the request's IP address and User-Agent.
+attributes events to the request's IP address and User-Agent. It is deliberately
+**not** a shared service — a fresh instance is built on each injection so the
+attribution never outlives the request, including under long-running runtimes
+(FrankenPHP worker mode, RoadRunner).
+
+## Registered services
+
+| Service                          | Visibility        | Notes                                                              |
+| -------------------------------- | ----------------- | ------------------------------------------------------------------ |
+| `Vskstudio\Takt\Takt`            | public, not shared | Autowired sender for server-side events; rebuilt per injection.     |
+| `Vskstudio\Takt\SnippetRenderer` | public, shared     | Renders the snippet; backs the `takt()` Twig function.              |
+| `Vskstudio\Takt\Options`         | private, shared    | Built from the bundle config, injected into the renderer.           |
+| `…\Twig\TaktTwigExtension`       | public, shared     | Tagged `twig.extension`, exposes the `takt()` function (HTML-safe). |
 
 > **Behind a proxy or load balancer?** The attributed IP comes from
 > `Request::getClientIp()`. It only honours `X-Forwarded-For` when the request

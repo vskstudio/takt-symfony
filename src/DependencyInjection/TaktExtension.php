@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Vskstudio\Takt\Symfony\OptionsFactory;
 use Vskstudio\Takt\Symfony\TaktFactory;
 use Vskstudio\Takt\Options;
 use Vskstudio\Takt\SnippetRenderer;
@@ -20,7 +21,7 @@ final class TaktExtension extends Extension
         $config = $this->processConfiguration(new Configuration(), $configs);
 
         $optionsDef = new Definition(Options::class);
-        $optionsDef->setFactory([Options::class, 'fromArray']);
+        $optionsDef->setFactory([OptionsFactory::class, 'create']);
         $optionsDef->setArguments([[
             'domain' => $config['domain'],
             'endpoint' => $config['endpoint'],
@@ -56,6 +57,9 @@ final class TaktExtension extends Extension
             new Reference('request_stack'),
         ]);
         $taktDef->setPublic(true);
+        // Non partagé : l'instance capte l'IP/User-Agent de la requête courante,
+        // elle ne doit pas survivre à la requête sous un exécuteur longue durée.
+        $taktDef->setShared(false);
         $container->setDefinition(Takt::class, $taktDef);
 
         (new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config')))->load('services.php');
