@@ -177,6 +177,22 @@ final class TaktExtensionTest extends TestCase
         $this->assertTrue($c->getDefinition(Takt::class)->isPublic());
     }
 
+    public function test_takt_service_is_not_shared(): void
+    {
+        // L'attribution visiteur est lue sur la requête courante : une instance
+        // partagée figerait l'IP/User-Agent de la première requête sous un
+        // exécuteur longue durée (FrankenPHP worker, RoadRunner).
+        $c = $this->compile(['domain' => 'example.com']);
+        $this->assertFalse($c->getDefinition(Takt::class)->isShared());
+        $this->assertNotSame($c->get(Takt::class), $c->get(Takt::class));
+    }
+
+    public function test_snippet_renderer_is_shared(): void
+    {
+        $c = $this->compile(['domain' => 'example.com']);
+        $this->assertSame($c->get(SnippetRenderer::class), $c->get(SnippetRenderer::class));
+    }
+
     public function test_twig_extension_registered_and_tagged(): void
     {
         $c = $this->compile(['domain' => 'example.com']);

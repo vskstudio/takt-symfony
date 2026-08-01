@@ -57,6 +57,9 @@ final class TaktExtension extends Extension
             new Reference('request_stack'),
         ]);
         $taktDef->setPublic(true);
+        // Non partagé : l'instance capte l'IP/User-Agent de la requête courante,
+        // elle ne doit pas survivre à la requête sous un exécuteur longue durée.
+        $taktDef->setShared(false);
         $container->setDefinition(Takt::class, $taktDef);
 
         (new PhpFileLoader($container, new FileLocator(__DIR__ . '/../../config')))->load('services.php');
