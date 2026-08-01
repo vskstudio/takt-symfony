@@ -8,6 +8,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Vskstudio\Takt\Symfony\OptionsFactory;
 use Vskstudio\Takt\Symfony\TaktFactory;
 use Vskstudio\Takt\Options;
 use Vskstudio\Takt\SnippetRenderer;
@@ -20,7 +21,7 @@ final class TaktExtension extends Extension
         $config = $this->processConfiguration(new Configuration(), $configs);
 
         $optionsDef = new Definition(Options::class);
-        $optionsDef->setFactory([Options::class, 'fromArray']);
+        $optionsDef->setFactory([OptionsFactory::class, 'create']);
         $optionsDef->setArguments([[
             'domain' => $config['domain'],
             'endpoint' => $config['endpoint'],
